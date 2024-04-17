@@ -1,5 +1,6 @@
 package com.githug.rshtishi.rest;
 
+import com.githug.rshtishi.aspect.PhoneNullCheck;
 import com.githug.rshtishi.dto.BookRequestDto;
 import com.githug.rshtishi.dto.ReturnRequestTo;
 import com.githug.rshtishi.entity.Phone;
@@ -25,12 +26,14 @@ public class PhoneController {
         return new ResponseEntity<>(phones, HttpStatus.OK);
     }
 
+    @PhoneNullCheck
     @PatchMapping("/{id}/book")
     public ResponseEntity<Phone> bookPhone(@PathVariable("id") long id,@RequestBody BookRequestDto bookRequestDto) {
         Phone rentedPhone = phoneService.bookPhone(id, bookRequestDto.bookBy());
         return new ResponseEntity<>(rentedPhone, HttpStatus.OK);
     }
 
+    @PhoneNullCheck
     @PatchMapping("/{id}/return")
     public ResponseEntity<Phone> returnPhone(@PathVariable("id") long id, @RequestBody ReturnRequestTo returnRequestTo) {
         Phone updatedPhone = phoneService.returnPhone(id, returnRequestTo.returnBy());

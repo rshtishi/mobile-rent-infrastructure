@@ -1,11 +1,14 @@
 package com.githug.rshtishi.service;
 
 import com.githug.rshtishi.entity.Phone;
+import com.githug.rshtishi.exception.PhoneAvailableException;
+import com.githug.rshtishi.exception.PhoneNotAvailableException;
+import com.githug.rshtishi.repository.PhoneRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,26 +31,35 @@ public class PhoneService {
         phones.add(new Phone(10L, "Nokia 3310", true, "", null));
     }
 
+    @Autowired
+    private PhoneRepository phoneRepository;
+
     public List<Phone> getAllPhones() {
-        return phones;
+        return phoneRepository.findAll();
     }
 
+
     public Phone bookPhone(long id, String bookedBy) {
-        Optional<Phone> maybePhone = phones.stream().filter(phone -> phone.getId() == id).findFirst();
-        maybePhone.ifPresent(phone -> {
+        Phone phone = phoneRepository.findById(id).orElse(null);
+        if(phone.isAvailability()){
             phone.setAvailability(false);
             phone.setBookedBy(bookedBy);
             phone.setBookedAt(LocalDateTime.now());
-        });
-        return maybePhone.orElse(null);
+            phoneRepository.save(phone);
+            return phone;
+        }
+        throw new PhoneNotAvailableException("Phone with name " + phone.getName() + " is not available");
     }
 
-    public Phone returnPhone(long id, String bookedBy) {
-        Optional<Phone> maybePhone = phones.stream().filter(phone -> phone.getId() == id).findFirst();
-        maybePhone.ifPresent(phone -> {
+    public Phone returnPhone(long id, String returnedBy) {
+        Phone phone = phoneRepository.findById(id).orElse(null);
+        if(!phone.isAvailability()){
             phone.setAvailability(true);
             phone.setBookedBy("");
-        });
-        return maybePhone.orElse(null);
+            phone.setBookedAt(null);
+            phoneRepository.save(phone);
+            return phone;
+        }
+        throw new PhoneAvailableException("Phone with name " + phone.getName() + " is already available");
     }
 }
