@@ -1,38 +1,24 @@
 package com.githug.rshtishi.service;
 
+import com.githug.rshtishi.dto.PhoneBookedEvent;
 import com.githug.rshtishi.entity.Phone;
 import com.githug.rshtishi.exception.PhoneAvailableException;
 import com.githug.rshtishi.exception.PhoneNotAvailableException;
+import com.githug.rshtishi.publisher.MobileRentNotificationPublisher;
 import com.githug.rshtishi.repository.PhoneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PhoneService {
-    private List<Phone> phones;
-
-    {
-        phones = new ArrayList<>();
-        // Add Phone objects to the list
-        phones.add(new Phone(1L, "Samsung Galaxy S9", true, "", null));
-        phones.add(new Phone(2L, "Samsung Galaxy S8", true, "", null));
-        phones.add(new Phone(3L, "Samsung Galaxy S8", true, "", null));
-        phones.add(new Phone(4L, "Motorola Nexus 6", true, "", null));
-        phones.add(new Phone(5L, "Oneplus 9", true, "", null));
-        phones.add(new Phone(6L, "Apple iPhone 13", true, "", null));
-        phones.add(new Phone(7L, "Apple iPhone 12", true, "", null));
-        phones.add(new Phone(8L, "Apple iPhone 11", true, "", null));
-        phones.add(new Phone(9L, "iPhone X", true, "", null));
-        phones.add(new Phone(10L, "Nokia 3310", true, "", null));
-    }
 
     @Autowired
     private PhoneRepository phoneRepository;
+    @Autowired
+    private MobileRentNotificationPublisher mobileRentNotificationPublisher;
 
     public List<Phone> getAllPhones() {
         return phoneRepository.findAll();
@@ -46,6 +32,7 @@ public class PhoneService {
             phone.setBookedBy(bookedBy);
             phone.setBookedAt(LocalDateTime.now());
             phoneRepository.save(phone);
+            mobileRentNotificationPublisher.publishNotification(new PhoneBookedEvent(phone.getId(), phone.getName(), bookedBy));
             return phone;
         }
         throw new PhoneNotAvailableException("Phone with name " + phone.getName() + " is not available");

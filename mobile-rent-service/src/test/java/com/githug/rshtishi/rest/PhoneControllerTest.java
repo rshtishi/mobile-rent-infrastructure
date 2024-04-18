@@ -3,6 +3,7 @@ package com.githug.rshtishi.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.githug.rshtishi.config.MysqlTestContainer;
+import com.githug.rshtishi.config.RabbitMQTestContainer;
 import com.githug.rshtishi.dto.BookRequestDto;
 import com.githug.rshtishi.dto.ReturnRequestTo;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +17,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class PhoneControllerTest implements MysqlTestContainer {
+class PhoneControllerTest implements MysqlTestContainer, RabbitMQTestContainer {
 
     private static final String API_ENDPOINT = "/api/v1/phones";
 
