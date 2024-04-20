@@ -10,19 +10,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class NotificationQueueListener {
 
-  private final MailService mailService;
+    private final MailService mailService;
 
-  @Autowired
-  public NotificationQueueListener(MailService mailService) {
-    this.mailService = mailService;
-  }
+    @Autowired
+    public NotificationQueueListener(MailService mailService) {
+        this.mailService = mailService;
+    }
 
-  @RabbitListener(queues = "notification.queue")
-  public void handleNotificationQueue(PhoneBookedEvent notificationEvent) {
-    System.out.println(notificationEvent);
-    String content = "Phone booked successfully! Click below to unbook: <br/> <a href=\"https://localhost:4200/returnPhone/" + notificationEvent.phoneId() + "/" + notificationEvent.bookedBy() + "/\">Return Phone</a><br/><br/>";
-
-    MailDto mail = new MailDto(notificationEvent.bookedBy(), "Phone Booked", content);
-    mailService.sendMail(mail, true);
-  }
+    @RabbitListener(queues = "mail.queue")
+    public void handleNotificationQueue(PhoneBookedEvent notificationEvent) {
+        String content = new StringBuilder("Phone booked successfully! Click below to unbook: <br/>")
+                .append("Phone booked successfully! Click below to unbook: <br/>")
+                .append(notificationEvent.getPhoneId())
+                .append("/")
+                .append(notificationEvent.getBookedBy())
+                .append("/\">Return Phone</a><br/><br/>")
+                .toString();
+        MailDto mail = new MailDto(notificationEvent.getBookedBy(), "Phone Booked", content);
+        mailService.sendMail(mail, true);
+        System.out.println("Event processed successfully!");
+    }
 }

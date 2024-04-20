@@ -31,7 +31,7 @@ public class RabbitMqConfig {
 
   @Bean
   public Queue notificationQueue() {
-    return new Queue(notificationQueue);
+    return new Queue(notificationQueue, true);
   }
 
   @Bean
