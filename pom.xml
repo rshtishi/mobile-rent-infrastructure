@@ -16,6 +16,7 @@
     <name>mobile-rent-infrastructure</name>
     <modules>
         <module>mobile-rent-service</module>
+        <module>notification-service</module>
     </modules>
     <version>1.0-SNAPSHOT</version>
 
