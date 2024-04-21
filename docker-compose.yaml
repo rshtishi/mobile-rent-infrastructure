@@ -1,0 +1,77 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: mobile-rent-db
+      MYSQL_USER: password
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mobile-rent-mysql-data:/var/lib/mysql  # Persistent data storage
+    networks:
+      - mobile-rent-network
+  rabbitmq:
+    build:
+      context: ./rabbitmq
+      dockerfile: Dockerfile
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - mobile-rent-rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - mobile-rent-network
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    networks:
+      - mobile-rent-network
+    depends_on:
+      - rabbitmq
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: password
+  mobile-rent-service:
+    build:
+      context: ./mobile-rent-service
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - mobile-rent-network
+    depends_on:
+      - mysql
+      - rabbitmq
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mobile-rent-db
+      SPRING_DATASOURCE_USERNAME: password
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: password
+  mobile-rent-app:
+    build:
+      context: ./mobile-rent-app
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    networks:
+      - mobile-rent-network
+    depends_on:
+      - mobile-rent-service
+networks:
+  mobile-rent-network:
+    driver: bridge
+volumes:
+  mobile-rent-mysql-data:
+  mobile-rent-rabbitmq-data:

@@ -19,13 +19,15 @@ public class NotificationQueueListener {
 
     @RabbitListener(queues = "mail.queue")
     public void handleNotificationQueue(PhoneBookedEvent notificationEvent) {
-        String content = new StringBuilder("Phone booked successfully! Click below to unbook: <br/>")
+        String content = new StringBuilder()
                 .append("Phone booked successfully! Click below to unbook: <br/>")
+                .append("<a href=\"http://localhost:4200/returnPhone/")
                 .append(notificationEvent.getPhoneId())
                 .append("/")
                 .append(notificationEvent.getBookedBy())
-                .append("/\">Return Phone</a><br/><br/>")
+                .append("\">Return Phone</a><br/><br/>")
                 .toString();
+
         MailDto mail = new MailDto(notificationEvent.getBookedBy(), "Phone Booked", content);
         mailService.sendMail(mail, true);
         System.out.println("Event processed successfully!");
