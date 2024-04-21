@@ -44,13 +44,6 @@ public class PhoneManager {
         return selectedPhone != null;
     }
 
-    public Phone getSelectedPhone() {
-        return selectedPhone;
-    }
-
-    public void setSelectedPhone(Phone selectedPhone) {
-        this.selectedPhone = selectedPhone;
-    }
 
     public void displayPhones() {
         System.out.println("Phones:");

@@ -69,6 +69,13 @@ services:
       - mobile-rent-network
     depends_on:
       - mobile-rent-service
+  mobile-rent-cli:
+    container_name: mobile-rent-cli
+    build:
+      context: ./mobile-rent-cli
+      dockerfile: Dockerfile
+    tty: true
+    stdin_open: true
 networks:
   mobile-rent-network:
     driver: bridge
