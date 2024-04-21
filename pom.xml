@@ -17,6 +17,7 @@
     <modules>
         <module>mobile-rent-service</module>
         <module>notification-service</module>
+        <module>mobile-rent-cli</module>
     </modules>
     <version>1.0-SNAPSHOT</version>
 
