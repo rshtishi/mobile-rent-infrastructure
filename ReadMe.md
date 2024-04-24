@@ -12,11 +12,12 @@ Pre-requisites:
 
 - Java version 21(Azul-zulu)
 - Docker
+- Docker Compose
 
 1. Clone the repository
 
 ```shell
-git@github.com:rshtishi/mobile-rent-infrastructure.git
+git clone git@github.com:rshtishi/mobile-rent-infrastructure.git
 ```
 
 2. Go to the project directory
